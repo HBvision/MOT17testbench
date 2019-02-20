@@ -51,12 +51,14 @@ if __name__ == '__main__':
         boxes = next(generator)
         coords = np.array(boxes)
         dists = mm.distances.norm2squared_matrix(coords, coords)
+        # Simply testing that the distance metric recognizes the GT boxes as zero distance from themselves
         acc.update(
-            # Simply testing that the distance metric recognizes the GT boxes as zero distance from themselves
             list(range(len(boxes))),
             list(range(len(boxes))),
             dists
         )
+
+    # Now that the accumulator has been sufficiently
     mh = mm.metrics.create()
     summary = mh.compute(acc, metrics=['num_frames', 'mota', 'motp'])
     print(summary)
