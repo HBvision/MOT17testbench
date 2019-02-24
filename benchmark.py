@@ -134,15 +134,6 @@ class SequenceLoader():
 
 
 if __name__ == '__main__':
-    # fname = load_sequence(1)
-    # generator = load_frame(fname)
-    # acc = mm.MOTAccumulator(auto_id=True)
-    # for frame in range(600):
-    #     boxes = next(generator)
-    #     coords = np.array(boxes)
-    #     dists = mm.distances.norm2squared_matrix(coords, coords)
-    #     # Simply testing that the distance metric recognizes the GT boxes as zero distance from themselves
-
     loader = DataLoader()
     acc = mm.MOTAccumulator(auto_id=True)
     for sequence in loader:
@@ -155,10 +146,7 @@ if __name__ == '__main__':
                dists
             )
 
-
-    # Now that the accumulator has been sufficiently
+    # Now that the accumulator has been sufficiently updated on all relevant information, metrics are computed
     # mh = mm.metrics.create()
     # summary = mh.compute(acc, metrics=['num_frames', 'mota', 'motp'])
     # print(summary)
-
-    print('yeet')
