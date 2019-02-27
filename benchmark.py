@@ -142,7 +142,7 @@ class SequenceLoader():
 
         :param predictions: A 1x2 numpy array of the midpoint of your prediction
         :param gt: The provided ground truth object
-        :return: Doesn't return anything
+        :return: A numpy array of the distances between each prediction and each ground truth box
         """
 
         p_coords = np.array(predictions)
@@ -153,6 +153,8 @@ class SequenceLoader():
             list(range(len(predictions))),
             dists
         )
+
+        return dists
 
     def display_metrics(self):
         mh = mm.metrics.create()
