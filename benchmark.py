@@ -6,7 +6,7 @@ import numpy as np
 
 # Instructions relating to the format of the dataset
 # https://motchallenge.net/instructions
-
+# left, top, width, height
 
 class DataLoader:
     def __init__(self, filepath='./'):
@@ -86,6 +86,8 @@ class SequenceLoader():
         self.imHeight =      info[6].split('=')[1][:-1]
         self.imExt =         info[7].split('=')[1][:-1]
 
+        self.accumulator = mm.metrics.MOTAccumulator(auto_id=True)
+
 
     def __iter__(self):
         # return self
@@ -122,15 +124,39 @@ class SequenceLoader():
             gt_filepath = self.filepath + '/det/det.txt'  # If we are dealing with the testing set, there is no ground truth file
         with open(gt_filepath, 'r') as fid:
             boxes = []  # A list to store the data on each bounding box
+            midpoints = []
             for line in fid:
                 box = line.split(',')
                 if int(line[0]) != self.frame:
                     self.frame += 1
-                    yield (boxes)
+                    yield (midpoints)
                     del (boxes[:])
-                boxes.append([float(box[x]) for x in range(2, 7)])  # Add the relevant parts of the box info
+                    del(midpoints[:])
+                boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
+                midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) - float(box[5]) / 2])
 
         yield (boxes)  # Returns the final frame of boxes
+
+    def update_metrics(self, predictions, gt):
+        """
+
+        :param predictions: A 1x2 numpy array of the midpoint of your prediction
+        :param gt: The provided ground truth object
+        :return: Doesn't return anything
+        """
+
+        p_coords = np.array(predictions)
+        g_coords = np.array(gt)
+        dists = mm.distances.norm2squared_matrix(p_coords, g_coords)
+        self.accumulator.update(
+            list(range(len(gt))),
+            list(range(len(predictions))),
+            dists
+        )
+
+    def display_metrics(self):
+        mh = mm.metrics.create()
+        print(mh.compute(self.accumulator, metrics=['num_frames', 'mota', 'motp']))
 
 
 if __name__ == '__main__':
@@ -138,15 +164,9 @@ if __name__ == '__main__':
     acc = mm.MOTAccumulator(auto_id=True)
     for sequence in loader:
         for frame, gt_data in sequence:
-            coords = np.array(gt_data)
-            dists = mm.distances.norm2squared_matrix(coords, coords)
-            acc.update(
-               list(range(len(frame))),
-               list(range(len(frame))),
-               dists
-            )
-
+            sequence.update_metrics(gt_data, gt_data)
+        sequence.display_metrics()
     # Now that the accumulator has been sufficiently updated on all relevant information, metrics are computed
-    # mh = mm.metrics.create()
-    # summary = mh.compute(acc, metrics=['num_frames', 'mota', 'motp'])
-    # print(summary)
+    mh = mm.metrics.create()
+    summary = mh.compute(acc, metrics=['num_frames', 'mota', 'motp'])
+    print(summary)

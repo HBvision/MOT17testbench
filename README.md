@@ -31,7 +31,9 @@ import benchmark
 loader = benchmark.DataLoader(filepath='./')
 for sequence in loader:
     for frame, gt_data in sequence:
-        pass
         # Tracker code for the current sequence
+        my_midpoints = []
+        sequence.update_metrics(my_midpoints, gt_data)
+    sequence.display_metrics()
     # Resetting tracker for the next sequence
 ```
