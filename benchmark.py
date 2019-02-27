@@ -60,7 +60,7 @@ class DataLoader:
             sequence_string = '0' + str(sequence_number)
         else:
             sequence_string = str(sequence_number)
-        sequence_filepath = self.filepath + 'data/*/MOT16-' + sequence_string
+        sequence_filepath = self.filepath + '*/MOT16-' + sequence_string
         data_path = ''.join(glob.glob(sequence_filepath, recursive=False))
         if len(data_path) == 0:
             raise IOError  # Raise an error if the sequence cannot be found
