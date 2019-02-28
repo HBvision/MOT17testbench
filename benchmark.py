@@ -87,6 +87,7 @@ class SequenceLoader():
         self.imExt =         info[7].split('=')[1][:-1]
 
         self.accumulator = mm.metrics.MOTAccumulator(auto_id=True)
+        self.midpoints = []
 
 
     def __iter__(self):
@@ -129,8 +130,9 @@ class SequenceLoader():
                 box = line.split(',')
                 if int(line[0]) != self.frame:
                     self.frame += 1
-                    yield (midpoints)
+                    yield (boxes)
                     del (boxes[:])
+                    self.midpoints = midpoints
                     del(midpoints[:])
                 boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
                 midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) - float(box[5]) / 2])
@@ -146,10 +148,10 @@ class SequenceLoader():
         """
 
         p_coords = np.array(predictions)
-        g_coords = np.array(gt)
+        g_coords = np.array(self.midpoints)
         dists = mm.distances.norm2squared_matrix(p_coords, g_coords)
         self.accumulator.update(
-            list(range(len(gt))),
+            list(range(len(self.midpoints))),
             list(range(len(predictions))),
             dists
         )
