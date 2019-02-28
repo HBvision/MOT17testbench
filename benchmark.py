@@ -139,7 +139,7 @@ class SequenceLoader():
 
         yield (boxes)  # Returns the final frame of boxes
 
-    def update_metrics(self, predictions, gt):
+    def update_metrics(self, predictions):
         """
 
         :param predictions: A 1x2 numpy array of the midpoint of your prediction
