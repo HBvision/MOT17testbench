@@ -9,7 +9,7 @@ import numpy as np
 # left, top, width, height
 
 class DataLoader:
-    def __init__(self, filepath='./'):
+    def __init__(self, filepath='./', midpoints=False):
         """
         Initializes a DataLoader object
 
@@ -17,6 +17,7 @@ class DataLoader:
         separate directory within the file system.
         """
         self.filepath = filepath
+        self.choose_midpoints = midpoints
 
     def __iter__(self):
         """
@@ -65,11 +66,11 @@ class DataLoader:
         if len(data_path) == 0:
             raise IOError  # Raise an error if the sequence cannot be found
 
-        return SequenceLoader(filepath=data_path)
+        return SequenceLoader(filepath=data_path, midpoints=self.choose_midpoints)
 
 
 class SequenceLoader():
-    def __init__(self, filepath='./'):
+    def __init__(self, filepath='./', midpoints=False):
         """
         A class for doing the io of a specific sequence
 
@@ -88,6 +89,7 @@ class SequenceLoader():
 
         self.accumulator = mm.metrics.MOTAccumulator(auto_id=True)
         self.midpoints = []
+        self.choose_midpoints = midpoints
 
 
     def __iter__(self):
@@ -130,10 +132,14 @@ class SequenceLoader():
                 box = line.split(',')
                 if int(line[0]) != self.frame:
                     self.frame += 1
-                    yield (boxes)
-                    del (boxes[:])
                     self.midpoints = midpoints
+                    if (self.choose_midpoints is True):
+                        yield (midpoints)
+                    else:
+                        yield (boxes)
+                    del (boxes[:])
                     del(midpoints[:])
+                    del(self.midpoints[:])
                 boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
                 midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) - float(box[5]) / 2])
 
@@ -164,13 +170,8 @@ class SequenceLoader():
 
 
 if __name__ == '__main__':
-    loader = DataLoader()
-    acc = mm.MOTAccumulator(auto_id=True)
+    loader = DataLoader(filepath='./data/', midpoints=True)
     for sequence in loader:
         for frame, gt_data in sequence:
-            sequence.update_metrics(gt_data, gt_data)
+            sequence.update_metrics(gt_data)
         sequence.display_metrics()
-    # Now that the accumulator has been sufficiently updated on all relevant information, metrics are computed
-    mh = mm.metrics.create()
-    summary = mh.compute(acc, metrics=['num_frames', 'mota', 'motp'])
-    print(summary)
