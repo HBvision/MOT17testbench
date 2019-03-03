@@ -28,12 +28,12 @@ folders are.
 ## Example Usage
 ```python
 import benchmark
-loader = benchmark.DataLoader(filepath='./')
+loader = benchmark.DataLoader(filepath='./', midpoints=True)
 for sequence in loader:
     for frame, gt_data in sequence:
         # Tracker code for the current sequence
         my_midpoints = []
-        dists = sequence.update_metrics(my_midpoints, gt_data)
+        dists = sequence.update_metrics(my_midpoints)
     sequence.display_metrics()
     # Resetting tracker for the next sequence
 ```
