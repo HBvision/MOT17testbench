@@ -142,7 +142,7 @@ class SequenceLoader():
                     del(midpoints[:])
                     del(self.midpoints[:])
                 boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
-                midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) - float(box[5]) / 2])
+                midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
 
         yield (boxes)  # Returns the final frame of boxes
 
