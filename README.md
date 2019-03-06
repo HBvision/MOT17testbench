@@ -26,6 +26,7 @@ exactly as it is downloaded, and your path should lead to wherever the train and
 folders are.
 
 ## Example Usage
+Standard Usage:
 ```python
 import benchmark
 loader = benchmark.DataLoader(filepath='./', midpoints=True)
@@ -35,5 +36,18 @@ for sequence in loader:
         my_midpoints = []
         dists = sequence.update_metrics(my_midpoints)
     sequence.display_metrics()
+    # Resetting tracker for the next sequence
+```
+
+Working on a specific sequence:
+```python
+import benchmark
+# Note that the following filepath is specific to my setup, but should lead to a MOTXX-XX folder that you have
+specific_sequence = benchmark.SequenceLoader(filepath='./data/train/MOT16-02', midpoints=False)
+for frame, gt_data in specific_sequence:
+    # Tracker code for the current sequence
+    my_midpoints = []
+    dists = specific_sequence.update_metrics(my_midpoints)
+specific_sequence.display_metrics()
     # Resetting tracker for the next sequence
 ```
