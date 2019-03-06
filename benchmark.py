@@ -99,7 +99,7 @@ class SequenceLoader():
         for frame in range(1, int(self.seqLength) + 1):
             frame_string = str(frame).zfill(6)
             img_filename = self.filepath + '/' + self.imDir + '/' + frame_string + self.imExt
-            img = cv2.imread(img_filename)
+            img = cv2.imread(img_filename, 1)
             if img is None:
                 break
             yield img, next(generator)
@@ -122,8 +122,8 @@ class SequenceLoader():
 
     def load_gt(self):
         if 'train' in self.filepath:
-            fix_gt(self.filepath + '/gt/gt_sorted.txt')
-            gt_filepath = self.filepath + '/gt/gt_sorted.txt'  # If we are dealing with the training set, we should use the ground truth file
+            fix_gt(self.filepath + '/gt/gt.txt')
+            gt_filepath = self.filepath + '/gt/gt_corrected.txt'  # If we are dealing with the training set, we should use the ground truth file
         else:
             gt_filepath = self.filepath + '/det/det.txt'  # If we are dealing with the testing set, there is no ground truth file
         with open(gt_filepath, 'r') as fid:
