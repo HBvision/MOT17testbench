@@ -2,7 +2,7 @@ import cv2
 import glob
 import motmetrics as mm
 import numpy as np
-
+import csv
 
 # Instructions relating to the format of the dataset
 # https://motchallenge.net/instructions
@@ -46,7 +46,7 @@ class DataLoader:
                 self.sequence += 1
                 yield current_sequence
             except IOError:
-                error_check = False
+                error_check = True
                 raise StopIteration
 
     def load_sequence(self, sequence_number):
@@ -122,7 +122,8 @@ class SequenceLoader():
 
     def load_gt(self):
         if 'train' in self.filepath:
-            gt_filepath = self.filepath + '/gt/gt.txt'  # If we are dealing with the training set, we should use the ground truth file
+            fix_gt(self.filepath + '/gt/gt_sorted.txt')
+            gt_filepath = self.filepath + '/gt/gt_sorted.txt'  # If we are dealing with the training set, we should use the ground truth file
         else:
             gt_filepath = self.filepath + '/det/det.txt'  # If we are dealing with the testing set, there is no ground truth file
         with open(gt_filepath, 'r') as fid:
@@ -130,10 +131,10 @@ class SequenceLoader():
             midpoints = []
             for line in fid:
                 box = line.split(',')
-                if int(line[0]) != self.frame:
+                if int(box[0]) != self.frame:
                     self.frame += 1
                     self.midpoints = midpoints
-                    if (self.choose_midpoints is True):
+                    if self.choose_midpoints is True:
                         yield (midpoints)
                     else:
                         yield (boxes)
@@ -147,7 +148,6 @@ class SequenceLoader():
 
     def update_metrics(self, predictions):
         """
-
         :param predictions: A 1x2 numpy array of the midpoint of your prediction
         :param gt: The provided ground truth object
         :return: A numpy array of the distances between each prediction and each ground truth box
@@ -168,9 +168,21 @@ class SequenceLoader():
         mh = mm.metrics.create()
         print(mh.compute(self.accumulator, metrics=['num_frames', 'mota', 'motp']))
 
+def fix_gt(filename):
+    with open(filename, 'r') as fid:
+        reader = csv.reader(fid)
+        sorted_list = sorted(reader, key=lambda row: int(row[0]), reverse=False)
+
+    out_filename = filename[0:-4] + '_corrected.txt'
+    with open(out_filename, 'w') as fid:
+        writer = csv.writer(fid, delimiter=',')
+        writer.writerows(sorted_list)
+
+
 
 if __name__ == '__main__':
     loader = DataLoader(filepath='./data/', midpoints=True)
+    fix_gt('./data/train/MOT16-02/gt/gt.txt')
     for sequence in loader:
         for frame, gt_data in sequence:
             sequence.update_metrics(gt_data)
