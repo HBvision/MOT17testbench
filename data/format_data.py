@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-root = './self_dataset/'
+root = './' + input('Input the dataset folder: ')
 filename = root + input("Please input the filename: ")
 directory = root + input("Please input the desired directory name: ") + "/"
 cap = cv2.VideoCapture(filename)

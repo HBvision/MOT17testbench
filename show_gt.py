@@ -1,7 +1,11 @@
 import benchmark
 import cv2
 
-loader = benchmark.DataLoader(filepath='./data/')
+dataset_path = './data/' + "HB"
+#dataset_path = './data/' + input("Please input name of the dataset: ")
+#dataset_path = root + '/' + input("Please input the name of the dataset: ")
+
+loader = benchmark.DataLoader(dataset_path)
 
 for sequence in loader:
     for frame, gt_data in sequence:

@@ -61,8 +61,9 @@ class DataLoader:
             sequence_string = '0' + str(sequence_number)
         else:
             sequence_string = str(sequence_number)
-        sequence_filepath = self.filepath + '*/MOT16-' + sequence_string
-        data_path = ''.join(glob.glob(sequence_filepath, recursive=False))
+        # TODO: Change this back before pushing or fix
+        sequence_filepath = self.filepath + '*/HB' + sequence_string
+        data_path = ''.join(glob.glob(sequence_filepath, recursive=True))
         if len(data_path) == 0:
             raise IOError  # Raise an error if the sequence cannot be found
 
@@ -121,28 +122,33 @@ class SequenceLoader():
             yield img, next(generator)
 
     def load_gt(self):
-        if 'train' in self.filepath:
-            fix_gt(self.filepath + '/gt/gt.txt')
-            gt_filepath = self.filepath + '/gt/gt_corrected.txt'  # If we are dealing with the training set, we should use the ground truth file
-        else:
-            gt_filepath = self.filepath + '/det/det.txt'  # If we are dealing with the testing set, there is no ground truth file
+        # TODO: Fix this
+        fix_gt(self.filepath + '/gt/gt.txt')
+        gt_filepath = self.filepath + '/gt/gt_corrected.txt'  # If we are dealing with the training set, we should use the ground truth file
+
+        # if 'train' in self.filepath:
+        #     fix_gt(self.filepath + '/gt/gt.txt')
+        #     gt_filepath = self.filepath + '/gt/gt_corrected.txt'  # If we are dealing with the training set, we should use the ground truth file
+        # else:
+        #     gt_filepath = self.filepath + '/det/det.txt'  # If we are dealing with the testing set, there is no ground truth file
         with open(gt_filepath, 'r') as fid:
             boxes = []  # A list to store the data on each bounding box
             midpoints = []
             for line in fid:
                 box = line.split(',')
-                if int(box[0]) != self.frame:
-                    self.frame += 1
-                    self.midpoints = midpoints
-                    if self.choose_midpoints is True:
-                        yield (midpoints)
-                    else:
-                        yield (boxes)
-                    del (boxes[:])
-                    del(midpoints[:])
-                    del(self.midpoints[:])
-                boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
-                midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
+                if line != '\n':
+                    if int(box[0]) != self.frame:
+                        self.frame += 1
+                        self.midpoints = midpoints
+                        if self.choose_midpoints is True:
+                            yield (midpoints)
+                        else:
+                            yield (boxes)
+                        del (boxes[:])
+                        del(midpoints[:])
+                        del(self.midpoints[:])
+                    boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
+                    midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
 
         yield (boxes)  # Returns the final frame of boxes
 
