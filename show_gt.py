@@ -13,9 +13,6 @@ for frame, gt_data in sequence:
             int_box = [int(x) for x in box]
             cv2.rectangle(frame, (int_box[0], int_box[1]), (int_box[0] + int_box[2], int_box[1] + int_box[3]), (0, 255, 0),
                           3)
-    if frame_num == 180:
-        print('yeet')
-        pass
     new_frame = cv2.resize(frame, (1366, 768))
     cv2.imshow('image', new_frame)
     cv2.waitKey(1)
