@@ -128,16 +128,24 @@ class SequenceLoader():
 
         # if 'train' in self.filepath:
         #     fix_gt(self.filepath + '/gt/gt.txt')
-        #     gt_filepath = self.filepath + '/gt/gt_corrected.txt'  # If we are dealing with the training set, we should use the ground truth file
+        #     gt_filepath = self.filepath + '/gt/gt_corrected.txt'
+        # If we are dealing with the training set, we should use the ground truth file
         # else:
-        #     gt_filepath = self.filepath + '/det/det.txt'  # If we are dealing with the testing set, there is no ground truth file
+        #     gt_filepath = self.filepath + '/det/det.txt'
+        # If we are dealing with the testing set, there is no ground truth file
         with open(gt_filepath, 'r') as fid:
             boxes = []  # A list to store the data on each bounding box
             midpoints = []
-            for line in fid:
+            lines = fid.readlines()
+            line_num = 0
+            frame_match = False
+            while self.frame <= int(self.seqLength):
+                line = lines[line_num]
                 box = line.split(',')
                 if line != '\n':
-                    if int(box[0]) != self.frame:
+                    # box[0] is the current bounding box
+                    # self.frame is the actual frame of the sequence we should be on
+                    if int(box[0]) > self.frame and frame_match:
                         self.frame += 1
                         self.midpoints = midpoints
                         if self.choose_midpoints is True:
@@ -147,8 +155,17 @@ class SequenceLoader():
                         del (boxes[:])
                         del(midpoints[:])
                         del(self.midpoints[:])
-                    boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
-                    midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
+                        frame_match = False
+                    elif int(box[0]) > self.frame:
+                        self.frame += 1
+                        yield ([])
+                    else:
+                        boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
+                        midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
+                        line_num += 1
+                        frame_match = True
+                else:
+                    line_num += 1
 
         yield (boxes)  # Returns the final frame of boxes
 
