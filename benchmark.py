@@ -139,7 +139,7 @@ class SequenceLoader():
             lines = fid.readlines()
             line_num = 0
             frame_match = False
-            while self.frame <= int(self.seqLength):
+            while self.frame <= int(self.seqLength) and line_num < len(lines):
                 line = lines[line_num]
                 box = line.split(',')
                 if line != '\n':
@@ -168,6 +168,8 @@ class SequenceLoader():
                     line_num += 1
 
         yield (boxes)  # Returns the final frame of boxes
+        while 1:
+            yield []
 
     def update_metrics(self, predictions):
         """
