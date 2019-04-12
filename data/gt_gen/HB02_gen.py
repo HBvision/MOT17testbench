@@ -24,13 +24,21 @@ for x in range(starting_frame, 255, 1):
     y_pos -= y_speed
     height += height_speed
 
+starting_frame = 60
 height = float(1080 * 2 / 5) + 20
 x_speed = 12
-x_pos = 1650
+x_pos = 1850
 y_pos = 1080 / 2
 y_speed = 0.4
 height_speed = -0.45
 for x in range(starting_frame, 300, 1):
+    if x == 80:
+        height = float(1080 * 2 / 5) + 20
+        x_speed = 12
+        x_pos = 1650
+        y_pos = 1080 / 2
+        y_speed = 0.4
+        height_speed = -0.45
     if x == 120:
         x_speed = 8
     if x == 180:
