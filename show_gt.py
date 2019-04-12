@@ -5,7 +5,7 @@ dataset_path = './data/' + "HB"
 # dataset_path = './data/' + input("Please input name of the dataset: ")
 # dataset_path = root + '/' + input("Please input the name of the dataset: ")
 
-sequence = benchmark.SequenceLoader('./data/HB/HB02')
+sequence = benchmark.SequenceLoader('./data/HB/HB01')
 
 frame_num = 1
 for frame, gt_data in sequence:
