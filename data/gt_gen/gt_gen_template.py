@@ -5,18 +5,18 @@ root = "../HB/HB01/"
 seq_filename = root + "seqinfo.ini"
 gt_filename = root + "/gt/gt.txt"
 
+sequence_info = benchmark.SequenceLoader(root)
+fid = open(gt_filename, "w")
+
 starting_frame = 1
 x_pos = 40
-y_pos = float(1080 / 2 - 100) + 10
-height = float(1080 * 1 / 5) + 80
-width = 90
-height_speed = 0
-
-sequence_info = benchmark.SequenceLoader(root)
-
-fid = open(gt_filename, "w")
 x_speed = 3
+y_pos = float(1080 / 2 - 100) + 10
 y_speed = 0.1
+height = float(1080 * 1 / 5) + 80
+height_speed = 0
+width = 90
+
 
 for x in range(starting_frame, int(sequence_info.seqLength), 1):
     fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
