@@ -12,30 +12,59 @@ img_width = int(sequence_info.imWidth) # 1920 for this dataset
 img_height = int(sequence_info.imHeight) # 1080 for this dataset
 
 starting_frame = 1
-x_pos = 40
-x_speed = 3
-y_pos = float(1080 / 2 - 100) + 10
-y_speed = 0.1
-height = float(1080 * 1 / 5) + 80
+x_pos = float(img_width * 1 / 2) - 150
+x_speed = 0
+y_pos = float(img_height * 1 / 4) - 100
+y_speed = 0.2
+height = float(img_height / 2) - 50
 height_speed = 0
-width = 90
+width = 180
+width_speed = 0
 
 
 for x in range(starting_frame, int(sequence_info.seqLength), 1):
-    fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+    fid.write(f"{int(x)},1,{int(x_pos)},{int(y_pos)},{int(width)},{int(height)},-1,-1,-1,-1,-1\n")
     if x == 30:
-        x_speed = 5
-    if x == 110:
-        x_speed = 6
-    if x == 200:
-        x_speed = 5
-    if x == 260:
-        x_speed = 4
-    if x == 150:
-        y_speed = 0.5
-
+        x_speed = -0.6
+        width_speed = 1
+        height_speed = 1
+    if x == 70:
+        height_speed = 3
+    if x == 95:
+        y_speed = 1
+        height_speed = 5
+    if x == 105:
+        height_speed = 9
+        x_speed = -3
+        width_speed = 6
+    if x == 115:
+        x_speed = -5
+        width_speed = 8
+        height_speed = 12
+    if x == 130:
+        y_speed = 3
+        height_speed = 6
+        x_speed = -5
+        width_speed = 5
+    if x == 140:
+        width_speed = 5.5
+    if x ==170:
+        x_speed = -3
+        width_speed = -4
+    if x == 190:
+        x_speed = -7
+        width_speed = 3
+    # if x == 180:
+    #     x_speed = -8
+    #     width_speed = 6
+    if y_pos < 10:
+        y_speed = 0
+        height = img_height - 20
+    if y_pos + height > img_height - 10:
+        height_speed = y_speed
     x_pos += x_speed
     y_pos -= y_speed
     height += height_speed
+    width += width_speed
 
 fid.close()
