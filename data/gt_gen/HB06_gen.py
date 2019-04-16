@@ -53,7 +53,7 @@ height_speed = 0
 width = 150
 
 for x in range(starting_frame, int(sequence_info.seqLength), 1):
-    fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+    fid.write(f"{x},2,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
     extra_fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1,-3.1,-0.01\n")
 
     if x == 15:

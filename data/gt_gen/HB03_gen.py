@@ -60,7 +60,7 @@ height = float(img_height * 1 / 5) + 160
 height_speed = -0.4
 
 for x in range(starting_frame, int(sequence_info.seqLength), 1):
-    fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+    fid.write(f"{x},2,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
     if x == 40:
         x_speed = -9
     if x == 80:

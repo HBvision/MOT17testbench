@@ -57,7 +57,7 @@ width = 120
 
 for x in range(starting_frame, int(sequence_info.seqLength), 1):
     if y_pos + height < img_height:
-        fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+        fid.write(f"{x},2,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
     else:
         print(x)
     if x == 30:
