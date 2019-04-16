@@ -3,7 +3,8 @@ import benchmark
 # Example gt filename
 root = "../HB/HB05/"
 seq_filename = root + "seqinfo.ini"
-gt_filename = root + "/gt/gt.txt"
+gt_filename = root + "gt/gt.txt"
+extra_gt_filename = root + "gt/speed_truth.txt"
 
 sequence_info = benchmark.SequenceLoader(root)
 fid = open(gt_filename, "w")
@@ -20,8 +21,17 @@ height = float(img_height / 2) + 33
 height_speed = 0
 width =180
 
+extra_fid = open(extra_gt_filename, "w")
+
 for x in range(starting_frame, int(sequence_info.seqLength), 1):
+    if x_pos + width > img_width or x_pos < 0:
+        print(x)
+        break;
+    if y_pos < 0 or y_pos + height > img_height:
+        print(x)
+        break;
     fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+    extra_fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1,3.2,0\n")
     if x == 15:
         x_speed = 12
     if x == 70:
@@ -36,6 +46,7 @@ for x in range(starting_frame, int(sequence_info.seqLength), 1):
     if x == 160:
         x_speed = 14
 
+
     x_pos += x_speed
     y_pos -= y_speed
     height += height_speed
@@ -49,9 +60,20 @@ height = float(img_height / 2) + 36
 height_speed = 0
 width = 180
 
-#108
+# Sequence length is 212
 for x in range(starting_frame, int(sequence_info.seqLength), 1):
-    fid.write(f"{x},2,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+    if x_pos < 0:
+        print(x)
+        break;
+    if y_pos < 0 or y_pos + height > img_height:
+        print(x)
+        break;
+
+    if x_pos + width < img_width:
+        fid.write(f"{x},2,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+        extra_fid.write(f"{x},2,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1,-3.4,0\n")
+    else:
+        print(x)
     if x == 15:
         x_speed = -15
     if x == 67:

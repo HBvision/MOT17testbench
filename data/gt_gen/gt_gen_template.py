@@ -8,6 +8,9 @@ gt_filename = root + "/gt/gt.txt"
 sequence_info = benchmark.SequenceLoader(root)
 fid = open(gt_filename, "w")
 
+img_width = int(sequence_info.imWidth) # 1920 for this dataset
+img_height = int(sequence_info.imHeight) # 1080 for this dataset
+
 starting_frame = 1
 x_pos = 40
 x_speed = 3
