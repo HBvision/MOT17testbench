@@ -46,7 +46,6 @@ for x in range(starting_frame, int(sequence_info.seqLength), 1):
     if x == 160:
         x_speed = 14
 
-
     x_pos += x_speed
     y_pos -= y_speed
     height += height_speed
