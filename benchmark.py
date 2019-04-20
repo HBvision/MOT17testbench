@@ -8,6 +8,7 @@ import csv
 # https://motchallenge.net/instructions
 # left, top, width, height
 
+
 class DataLoader:
     def __init__(self, filepath='./', midpoints=False):
         """
@@ -76,7 +77,7 @@ class DataLoader:
         return SequenceLoader(filepath=data_path, midpoints=self.choose_midpoints)
 
 
-class SequenceLoader():
+class SequenceLoader:
     def __init__(self, filepath='./', midpoints=False, detections=False, id=False):
         """
         A class for doing the io of a specific sequence
@@ -99,19 +100,24 @@ class SequenceLoader():
         self.choose_midpoints = midpoints
         self.detections = detections
         self.id = id
+        self.frame = 1
 
+        self.detection_generator = self.load_detections()
 
     def __iter__(self):
-        # return self
-        generator = self.load_gt()
-        self.frame = 1
+        """
+        Defines the functionality for SequenceLoader's use in a for loop, returning images and ground truth bounding
+        boxes for each frame in the sequence.
+        :return: img, gt_data are the image array and the bounding boxs for that frame
+        """
         for frame in range(1, int(self.seqLength) + 1):
             frame_string = str(frame).zfill(6)
             img_filename = self.filepath + '/' + self.imDir + '/' + frame_string + self.imExt
             img = cv2.imread(img_filename, 1)
             if img is None:
                 break
-            yield img, next(generator)
+            yield img, next(self.detection_generator)
+            del img
 
     def __next__(self):
         """
@@ -121,15 +127,19 @@ class SequenceLoader():
         :return: A numpy array of the image followed by a list of ground truth detections for a given frame in the
         correct format
         """
-        generator = self.load_gt()
-        for frame in range(1, int(self.seqLength) + 1):
-            frame_string = str(frame).zfill(6)
-            img = cv2.imread(self.filepath + '/' + self.imDir + '/' + frame_string + self.imExt)
-            if img is None:
-                break
-            yield img, next(generator)
 
-    def load_gt(self):
+        frame_string = str(self.frame).zfill(6)
+        img = cv2.imread(self.filepath + '/' + self.imDir + '/' + frame_string + self.imExt)
+        if img is None:
+            raise GeneratorExit
+        # Note:
+        return img, next(self.detection_generator)
+
+    def load_detections(self):
+        """
+        Loads the ground truth file
+        :return:
+        """
         if self.detections:
             fix_gt(self.filepath + '/det/det.txt')
             gt_filepath = self.filepath + '/det/det.txt'
@@ -137,12 +147,6 @@ class SequenceLoader():
             fix_gt(self.filepath + '/gt/gt.txt')
             gt_filepath = self.filepath + '/gt/gt_corrected.txt'  # If we are dealing with the training set, we should use the ground truth file
 
-        # if 'train' in self.filepath:
-        #     fix_gt(self.filepath + '/gt/gt.txt')
-        #     gt_filepath = self.filepath + '/gt/gt_corrected.txt'
-        # If we are dealing with the training set, we should use the ground truth file
-        # else:
-        #     gt_filepath = self.filepath + '/det/det.txt'
         # If we are dealing with the testing set, there is no ground truth file
         with open(gt_filepath, 'r') as fid:
             boxes = []  # A list to store the data on each bounding box

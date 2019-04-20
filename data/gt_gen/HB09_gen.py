@@ -68,7 +68,7 @@ width = 160
 width_speed = 0
 
 for x in range(starting_frame, int(sequence_info.seqLength), 1):
-    fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+    fid.write(f"{x},2,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
     if x == 30:
         y_speed = 0.6
         height_speed = 3
@@ -114,7 +114,7 @@ width = 160
 width_speed = 0
 
 for x in range(starting_frame, ending_frame, 1):
-    fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
+    fid.write(f"{x},3,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
     if x == 30:
         y_speed = 1
         height_speed = 2
