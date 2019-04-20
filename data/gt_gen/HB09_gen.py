@@ -45,6 +45,9 @@ for x in range(starting_frame, ending_frame, 1):
         x_speed = -8
         width_speed = 4
 
+    if y_pos - 10 < 0:
+        y_speed = 0
+
     if y_pos + height > img_height:
         height_speed = y_speed
 
@@ -100,23 +103,52 @@ for x in range(starting_frame, int(sequence_info.seqLength), 1):
 
 # Third bounding box ()
 starting_frame = 1
+ending_frame = 220
 x_pos = img_width / 2 + 100
 x_speed = 0
-y_pos = float(img_height / 4) - 25
+y_pos = float(img_height / 4) - 35
 y_speed = 0.5
-height = float(img_height / 2) + 100
+height = float(img_height / 2) + 80
 height_speed = 1
 width = 160
 width_speed = 0
 
-for x in range(starting_frame, int(sequence_info.seqLength), 1):
+for x in range(starting_frame, ending_frame, 1):
     fid.write(f"{x},1,{int(x_pos)},{int(y_pos)},{width},{int(height)},-1,-1,-1,-1,-1\n")
     if x == 30:
-        x_speed = 5
+        y_speed = 1
+        height_speed = 2
+        width_speed = 1
+    if x == 60:
+        y_speed = 2
+        height_speed = 5
+    if x == 80:
+        height_speed = 7
+    if x == 90:
+        width_speed = 3
+    if x == 120:
+        y_speed = 3
+    if x == 160:
+        x_speed = 12
+        width_speed = 5
+    if x == 180:
+        break
+    if x == 200:
+        x_speed = 9
+
+    if x_pos + width > img_width:
+        break
+    if y_pos - 10 < 0:
+        y_speed = 0
+    check = y_pos + height
+    if y_pos + height > img_height - 10:
+        height_speed = y_speed
 
     x_pos += x_speed
     y_pos -= y_speed
     height += height_speed
     width += width_speed
+
+
 
 fid.close()
