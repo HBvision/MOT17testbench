@@ -4,6 +4,10 @@ import motmetrics as mm
 import numpy as np
 import csv
 
+# The maintainer of this codebase is Ian Haggerty,
+# a student at Purdue University. To contact him,
+# email ihaggert@purdue.edu
+
 # Instructions relating to the format of the dataset
 # https://motchallenge.net/instructions
 # left, top, width, height
@@ -40,6 +44,9 @@ class DataLoader:
         # return self
 
     def __next__(self):
+
+        #TODO: Rewrite this like in the SequenceLoader class
+        #TODO: Make the sequence loader class check for IOError
         error_check = False
         while not error_check:
             try:
@@ -128,8 +135,11 @@ class SequenceLoader:
         correct format
         """
 
-        frame_string = str(self.frame).zfill(6)
-        img = cv2.imread(self.filepath + '/' + self.imDir + '/' + frame_string + self.imExt)
+        if self.frame <= int(self.seqLength):
+            frame_string = str(self.frame).zfill(6)
+            img = cv2.imread(self.filepath + '/' + self.imDir + '/' + frame_string + self.imExt)
+        else:
+            raise GeneratorExit
         if img is None:
             raise GeneratorExit
         # Note:
@@ -178,8 +188,8 @@ class SequenceLoader:
                         boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
                         midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
                         if self.id is True:
-                            boxes.append(box[0])
-                            midpoints.append(box[0])
+                            boxes.append(box[1])
+                            midpoints.append(box[1])
 
                         line_num += 1
                         frame_match = True
@@ -188,6 +198,7 @@ class SequenceLoader:
 
         yield (boxes)  # Returns the final frame of boxes
         while 1:
+            self.frame += 1
             yield []
 
     def update_metrics(self, predictions):
