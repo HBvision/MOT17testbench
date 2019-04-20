@@ -185,11 +185,12 @@ class SequenceLoader:
                         self.frame += 1
                         yield ([])
                     else:
-                        boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
-                        midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
                         if self.id is True:
-                            boxes.append(box[1])
-                            midpoints.append(box[1])
+                            boxes.append([float(box[x]) for x in range(2, 6)].append(box[1]))
+                            midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2, box[1]])
+                        else:
+                            boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
+                            midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
 
                         line_num += 1
                         frame_match = True
