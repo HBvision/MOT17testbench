@@ -61,8 +61,14 @@ class DataLoader:
             sequence_string = '0' + str(sequence_number)
         else:
             sequence_string = str(sequence_number)
-        # TODO: Change this back before pushing or fix
-        sequence_filepath = self.filepath + '*/HB' + sequence_string
+
+        if 'HB' in self.filepath:
+            sequence_filepath = self.filepath + '*/HB' + sequence_string
+        elif 'MOT16' in self.filepath:
+            sequence_filepath = self.filepath + '*/MOT16' + sequence_string
+        elif 'MOT15' in self.filepath:
+            sequence_filepath = self.filepath + '*/MOT15' + sequence_string
+
         data_path = ''.join(glob.glob(sequence_filepath, recursive=True))
         if len(data_path) == 0:
             raise IOError  # Raise an error if the sequence cannot be found
@@ -71,7 +77,7 @@ class DataLoader:
 
 
 class SequenceLoader():
-    def __init__(self, filepath='./', midpoints=False):
+    def __init__(self, filepath='./', midpoints=False, detections=False, id=False):
         """
         A class for doing the io of a specific sequence
 
@@ -91,6 +97,8 @@ class SequenceLoader():
         self.accumulator = mm.metrics.MOTAccumulator(auto_id=True)
         self.midpoints = []
         self.choose_midpoints = midpoints
+        self.detections = detections
+        self.id = id
 
 
     def __iter__(self):
@@ -122,9 +130,12 @@ class SequenceLoader():
             yield img, next(generator)
 
     def load_gt(self):
-        # TODO: Fix this
-        fix_gt(self.filepath + '/gt/gt.txt')
-        gt_filepath = self.filepath + '/gt/gt_corrected.txt'  # If we are dealing with the training set, we should use the ground truth file
+        if self.detections:
+            fix_gt(self.filepath + '/det/det.txt')
+            gt_filepath = self.filepath + '/det/det.txt'
+        else:
+            fix_gt(self.filepath + '/gt/gt.txt')
+            gt_filepath = self.filepath + '/gt/gt_corrected.txt'  # If we are dealing with the training set, we should use the ground truth file
 
         # if 'train' in self.filepath:
         #     fix_gt(self.filepath + '/gt/gt.txt')
@@ -162,6 +173,10 @@ class SequenceLoader():
                     else:
                         boxes.append([float(box[x]) for x in range(2, 6)])  # Add the relevant parts of the box info
                         midpoints.append([float(box[2]) + float(box[4]) / 2, float(box[3]) + float(box[5]) / 2])
+                        if self.id is True:
+                            boxes.append(box[0])
+                            midpoints.append(box[0])
+
                         line_num += 1
                         frame_match = True
                 else:
@@ -193,21 +208,19 @@ class SequenceLoader():
         mh = mm.metrics.create()
         print(mh.compute(self.accumulator, metrics=['num_frames', 'mota', 'motp']))
 
+
 def fix_gt(filename):
     with open(filename, 'r') as fid:
         reader = csv.reader(fid)
         sorted_list = sorted(reader, key=lambda row: int(row[0]), reverse=False)
 
     out_filename = filename[0:-4] + '_corrected.txt'
-    with open(out_filename, 'w') as fid:
+    with open(out_filename, 'w', newline='') as fid:
         writer = csv.writer(fid, delimiter=',')
         writer.writerows(sorted_list)
 
-
-
 if __name__ == '__main__':
     loader = DataLoader(filepath='./data/', midpoints=True)
-    fix_gt('./data/train/MOT16-02/gt/gt.txt')
     for sequence in loader:
         for frame, gt_data in sequence:
             sequence.update_metrics(gt_data)
